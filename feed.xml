@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Blog Name</title>
+  <subtitle>Blog subtitle</subtitle>
+  <id>http://blog.url.com/articles</id>
+  <link href="http://blog.url.com/articles"/>
+  <link href="http://blog.url.com/feed.xml" rel="self"/>
+  <updated>2017-10-18T15:19:00-06:00</updated>
+  <author>
+    <name>Blog Author</name>
+  </author>
+  <entry>
+    <title>Testing APIs in Rails with Sinatra</title>
+    <link rel="alternate" href="http://blog.url.com/articles/2017/10/18/testing-apis-in-rails-with-sinatra.html"/>
+    <id>http://blog.url.com/articles/2017/10/18/testing-apis-in-rails-with-sinatra.html</id>
+    <published>2017-10-18T15:19:00-06:00</published>
+    <updated>2018-12-03T14:22:13-07:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">&lt;p&gt;Most modern web applications consume one or more APIs, but testing external services can cause a host of problems. For example, connecting to external services can slow down a testing suite; many APIs have rate limits; and, some APIs may not have testing (sandbox) functionality.&lt;/p&gt;
+
+&lt;p&gt;There are several different approaches to testing external APIs - ranging from creating fake stubs to recording live responses with VCR - but there's one approach that I have come to favor over the others due to its simplicity, speed, and robustness.&lt;/p&gt;
+
+&lt;h1 id="stubbing-a-request"&gt;Stubbing a Request&lt;/h1&gt;
+
+&lt;p&gt;The most common solution to this problem is to simply stub any API requests. With libraries like WebMock, you can disable external connections and then fake the response for testing purposes. This way, you can pass the tests and ensure that you properly handle the responses.&lt;/p&gt;
+
+&lt;p&gt;For example, an RSpec feature might look something like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;feature 'Test API Response' do
+  it 'runs a get query somewhere' do
+    url = URI('https://someapi.com')
+    response = Net::HTTP.get(uri)
+    expect(response).to include('something')
+  end
+end
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;We can then stub the request using an RSpec before block:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;config.before(:each) do
+  stub_request(:get, '/someapi.com/').
+    to_return(status: 200, body: 'something', headers: {})
+  end
+end
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The problem with this approach is that stubs for a single external API could be spread out across many tests. If your application relies heavily on an API, this can turn into a nightmare scenario to keep updated if that external API changes.&lt;/p&gt;
+
+&lt;h1 id="creating-your-own-server"&gt;Creating Your Own Server&lt;/h1&gt;
+
+&lt;p&gt;I came across a ThoughtBot &lt;a href="https://robots.thoughtbot.com/how-to-stub-external-services-in-tests"&gt;blog post&lt;/a&gt; several years ago that discussed different ways of testing external APIs. One of these methods involved creating a small Sinatra app within a Rails app to essentially recreate an external API. Ever since, I've been using this technique in cases where I heavily use an API.&lt;/p&gt;
+
+&lt;p&gt;To set it up, you first need to route all requests to the Sinatra app via Rack in Rspec.config:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;config.before(:each) do
+  stub_request(:any, /someapi.com/).to_rack(FakeApi)
+end
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;You can then create a basic Sinatra app to deliver the responses:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;require 'sinatra/base'
+class FakeApi &amp;lt; Sinatra::Base
+  get '/some/route/here' do
+    json_response 200, 'endpoint.json'
+  end
+  private
+  def json_response(response_code, file_name)
+    content_type :json
+    status response_code
+    File.open(File.dirname(__FILE__) + '/fixtures/' + file_name, 'rb')
+  end
+end
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;I usually keep this file in /rspec/support/. Finally, you can copy-and-paste a JSON response from the API documentation and put it into the /rspec/fixtures/ folder. You can then handle these JSON responses in your tests, knowing that it's an accurate response.&lt;/p&gt;
+
+&lt;p&gt;The benefit of this approach is that you can simply copy-and-paste any changes to the API into files and everything involved with the API is held in a single file that contains the Sinatra app.&lt;/p&gt;
+
+&lt;h1 id="next-steps"&gt;Next Steps&lt;/h1&gt;
+
+&lt;p&gt;There are many different ways to test external APIs and there are no one-solution-fits-all approaches. That said, developing a simple Sinatra app is a great way to keep code organized and easily copy-and-paste responses from an API's documentation to ensure accuracy.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>How to Create Pretty Charts in Python</title>
+    <link rel="alternate" href="http://blog.url.com/articles/2017/09/18/how-to-create-pretty-charts-in-python.html"/>
+    <id>http://blog.url.com/articles/2017/09/18/how-to-create-pretty-charts-in-python.html</id>
+    <published>2017-09-18T16:14:00-06:00</published>
+    <updated>2018-12-04T15:16:37-07:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">&lt;p&gt;There's no doubt that python is a great language for analyzing data, but it can be a challenge to translate that data into understandable formats. As a financial writer (as well as a software developer), I have a deep appreciation for charts that can quickly tell a story about an underlying metric, such as showing revenue trends or highlighting where revenue is coming from in a firm. The good news is that Python has an easy way to generate charts that can be used in articles.&lt;/p&gt;
+
+&lt;p&gt;In this post, we will look at how to create a simple chart in Python that's both visually appealing and branded with your company's information.&lt;/p&gt;
+
+&lt;h1 id="setting-the-stage"&gt;Setting the Stage&lt;/h1&gt;
+
+&lt;p&gt;The first step is installing Python and some standard libraries that we'll be using to modify the data and generate a chart. Assuming that you have Python already installed, you'll need the pandas and matplotlib libraries installed to generate these charts.&lt;/p&gt;
+
+&lt;p&gt;You can install these libraries using pip:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;pip install pandas
+pip install matplotlib
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;These are the only two libraries that we'll use in this tutorial, but there are many other libraries that can be used to generate different types of charts. For example, you might want to consider more advanced charting libraries to generate unique charts like those found in D3.&lt;/p&gt;
+
+&lt;p&gt;Next, we need to clean and import that data that we'll need to generate the chart. A key benefit of using Python is that you can conduct fairly complex data manipulation without much effort compared to using Microsoft Excel or more hands-on applications to generate charts.&lt;/p&gt;
+
+&lt;p&gt;In this case, we'll just use a simple CSV data set from the American Pet Products Association that simply plots American spending on pet products over time.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Year,Dollars
+2017,69.36
+2016,66.75
+2015,60.28
+2014,58.04
+2013,55.72
+2012,53.33
+2011,50.96
+2010,48.35
+2009,45.53
+2008,43.2
+2007,41.2
+2006,38.5
+2005,36.3
+2004,34.4
+2003,32.4
+2002,29.6
+2001,28.5
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;If you're following the tutorial on your machine, simply copy and paste these values into a file and save it with a CSV extension.&lt;/p&gt;
+
+&lt;h1 id="setting-up-the-chart"&gt;Setting up the Chart&lt;/h1&gt;
+
+&lt;p&gt;We will start by creating a new Python file called appa.py that will contain the code necessary to generate the chart.&lt;/p&gt;
+
+&lt;p&gt;First, let's import the pandas and matplotlib libraries that we need and namespace parts of the library for easy access within our application:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;import pandas
+import matplotlib.pyplot as plt
+import matplotlib.style as style
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;We can then define the base style that we'll use for the chart:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;style.use('fivethirtyeight')
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Note that there are many different built-in matplotlib styles that you can use and several more that you can import. You can also create your own style to easily reproduce charts with the same appearance. In this example, we will use the built-in fivethirtyeight style.&lt;/p&gt;
+
+&lt;p&gt;Second, let's import the CSV file we've created and define the columns and chart size:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;data = pd.read_csv('data.csv')
+graph = data.plot(x = 'Year', y = 'Dollars', figsize = (12,8))
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;At this point, we would be able to generate a basic chart, but let's add some custom styling to make things a little more interesting and brandable.&lt;/p&gt;
+
+&lt;h1 id="styling-the-chart"&gt;Styling the Chart&lt;/h1&gt;
+
+&lt;p&gt;Matplotlib makes it easy to add style to the chart. In this case, we will hiding the X-axis label, add some description text, and brand the chart with your company's information. But, there's a lot more you can do that's outlined in the library's documentation.&lt;/p&gt;
+
+&lt;p&gt;Here's what the styling might look like in our case:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;graph.xaxis.label.set_visible(False)
+graph.axhline(y = 0, color = 'black', linewidth = 1.3, alpha = .7)
+graph.text(x = 2000, y = 79, s = "U.S. Pet Spending", fontsize = 26, weight = 'bold', alpha = .75)
+graph.text(x = 2000, y = 75, s = "American spending on pet products and services in billions of dollars", fontsize = 16, alpha = .85)
+graph.text(x = 2000, y = -9, s = "(C) Your Company Inc.                                                                                    Source: American Pet Products Association", fontsize = 14, color = '#f0f0f0', backgroundcolor = 'grey')
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Note that the x and y coordinates for the text location are based on the actual coordinates of the chart. Since the x-axis represents the year, we are using 2000 as a starting point, for example. Also, note the space between the company name and the source of the data, which you may need to adjust.&lt;/p&gt;
+
+&lt;h1 id="displaying-the-chart"&gt;Displaying the Chart&lt;/h1&gt;
+
+&lt;p&gt;The final step is displaying the chart.&lt;/p&gt;
+
+&lt;p&gt;We will add the following code to show the chart in the Python file:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;plt.gca().invert_xaxis()
+plt.show()
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, we can view the chart by simply running the file in the command line:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;python appa.py
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h1 id="whats-next"&gt;What's Next?&lt;/h1&gt;
+
+&lt;p&gt;This brief article just scratches the surface of what's possible when analyzing and generating charts in Python. Try experimenting with different chart types from the documentation and see how it works for you. I have created custom styles for clients that they can easily re-use between charts, which makes the process of branding important data images extremely simple.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>How to Use Sessions with Elm</title>
+    <link rel="alternate" href="http://blog.url.com/articles/2017/09/11/how-to-use-sessions-with-elm.html"/>
+    <id>http://blog.url.com/articles/2017/09/11/how-to-use-sessions-with-elm.html</id>
+    <published>2017-09-11T16:12:00-06:00</published>
+    <updated>2018-12-04T15:14:17-07:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">&lt;p&gt;Elm is awesome for writing fast, easy-to-ready, and error-free JavaScript, but there are many cases where you'll need to interact with external things. Fortunately, Elm has a way to do this without introducing any error-ridden code to the application.&lt;/p&gt;
+
+&lt;p&gt;In this post, we will look at how to implement sessions with Elm using a Elm's JavaScript Interop.&lt;/p&gt;
+
+&lt;h1 id="javascript-interop"&gt;JavaScript Interop&lt;/h1&gt;
+
+&lt;p&gt;Elm is great for writing clean code with no runtime errors, but there are instances when you need to use JavaScript. For example, you might want to use Stripe's JavaScript library to process payments or persist data to the browser using sessions.&lt;/p&gt;
+
+&lt;p&gt;You can accomplish these things using Elm ports and flags. Elm can send and receive data through ports that it can then process internally and update the user interface. Flags can be used to initialize an Elm program with external values.&lt;/p&gt;
+
+&lt;p&gt;A flag that sets a username might look something like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;const app = Elm.App.fullscreen({
+  username: 'Bob'
+});
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;We will take a look at how to implement a port in the remainder of this blog post to persist authentication tokens to the user's browser.&lt;/p&gt;
+
+&lt;h1 id="adding-a-port"&gt;Adding a Port&lt;/h1&gt;
+
+&lt;p&gt;The first step in adding a port to an Elm application is adding the port keyword before the module name when defining the application file.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;port module App exposing (..)
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The second step is adding two port commands for setting a token and getting a token. Note that you could (and maybe should) get the token using a flag rather than port, but we're going to use a port in this example to show how it's done.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;port setToken : String -&amp;gt; Cmd msg
+port getToken : (String -&amp;gt; msg) -&amp;gt; Sub msg
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The setToken port takes a string and returns a command message to set the token, while the getToken port returns a subscription that listens for a token to be sent.&lt;/p&gt;
+
+&lt;p&gt;The third step is creating the subscription that will set the token in the Elm app.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;subscriptions : Model -&amp;gt; Sub Msg
+subscriptions model =
+  getToken AddToken
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The AddToken would simply be a message in the update method that adds the token to your model.&lt;/p&gt;
+
+&lt;h1 id="adding-the-javascript"&gt;Adding the JavaScript&lt;/h1&gt;
+
+&lt;p&gt;Now that the Elm code is ready, we will write the JavaScript code in the HTML file where the Elm code is embedded. This code will listen for and send any necessary data to and from Elm.&lt;/p&gt;
+
+&lt;p&gt;Here's what that entire section will look like:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;&amp;lt;script type="text/javascript"&amp;gt;
+  const node = document.getElementById('elm');
+  const app = Elm.App.embed(node);
+  var currentToken = localStorage.getItem('myToken');
+  if (currentToken) {
+    app.ports.getToken.send(currentToken);
+  }
+  app.ports.setToken.subscribe(function(token) {
+    localStorage.setItem('myToken', token)
+  });
+&amp;lt;/script&amp;gt;
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;In this code, we initialize an Elm app and set the currentToken to the localStorage value for myToken. If the value is not nil, we use the getToken port to send the value to the Elm app. If the value is nil, we use the setToken port to listen for a token to be sent and then set it to localStorage.&lt;/p&gt;
+
+&lt;h1 id="whats-next"&gt;What's Next&lt;/h1&gt;
+
+&lt;p&gt;These same basic concepts can be applied to all kinds of JavaScript Interop situations. If you want to get data from JavaScript, you create a port and a subscription using the subscribe method. If you want to send data to JavaScript, you create a port using the send method.&lt;/p&gt;
+</content>
+  </entry>
+</feed>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Use the title from a page's frontmatter if it has one -->
+    <title>How to Use Sessions with Elm</title>
+    <link href="/stylesheets/site.css" rel="stylesheet" />
+    <script src="/javascripts/site.js"></script>
+  </head>
+  <body>
+    <section id="blog" role="main">
+      <div class="container">
+        <p>Elm is awesome for writing fast, easy-to-ready, and error-free JavaScript, but there are many cases where you'll need to interact with external things. Fortunately, Elm has a way to do this without introducing any error-ridden code to the application.</p>
+
+<p>In this post, we will look at how to implement sessions with Elm using a Elm's JavaScript Interop.</p>
+
+<h1 id="javascript-interop">JavaScript Interop</h1>
+
+<p>Elm is great for writing clean code with no runtime errors, but there are instances when you need to use JavaScript. For example, you might want to use Stripe's JavaScript library to process payments or persist data to the browser using sessions.</p>
+
+<p>You can accomplish these things using Elm ports and flags. Elm can send and receive data through ports that it can then process internally and update the user interface. Flags can be used to initialize an Elm program with external values.</p>
+
+<p>A flag that sets a username might look something like this:</p>
+
+<p><code>const app = Elm.App.fullscreen({
+  username: 'Bob'
+});
+</code></p>
+
+<p>We will take a look at how to implement a port in the remainder of this blog post to persist authentication tokens to the user's browser.</p>
+
+<h1 id="adding-a-port">Adding a Port</h1>
+
+<p>The first step in adding a port to an Elm application is adding the port keyword before the module name when defining the application file.</p>
+
+<p><code>port module App exposing (..)
+</code></p>
+
+<p>The second step is adding two port commands for setting a token and getting a token. Note that you could (and maybe should) get the token using a flag rather than port, but we're going to use a port in this example to show how it's done.</p>
+
+<p><code>port setToken : String -&gt; Cmd msg
+port getToken : (String -&gt; msg) -&gt; Sub msg
+</code></p>
+
+<p>The setToken port takes a string and returns a command message to set the token, while the getToken port returns a subscription that listens for a token to be sent.</p>
+
+<p>The third step is creating the subscription that will set the token in the Elm app.</p>
+
+<p><code>subscriptions : Model -&gt; Sub Msg
+subscriptions model =
+  getToken AddToken
+</code></p>
+
+<p>The AddToken would simply be a message in the update method that adds the token to your model.</p>
+
+<h1 id="adding-the-javascript">Adding the JavaScript</h1>
+
+<p>Now that the Elm code is ready, we will write the JavaScript code in the HTML file where the Elm code is embedded. This code will listen for and send any necessary data to and from Elm.</p>
+
+<p>Here's what that entire section will look like:</p>
+
+<p><code>&lt;script type="text/javascript"&gt;
+  const node = document.getElementById('elm');
+  const app = Elm.App.embed(node);
+  var currentToken = localStorage.getItem('myToken');
+  if (currentToken) {
+    app.ports.getToken.send(currentToken);
+  }
+  app.ports.setToken.subscribe(function(token) {
+    localStorage.setItem('myToken', token)
+  });
+&lt;/script&gt;
+</code></p>
+
+<p>In this code, we initialize an Elm app and set the currentToken to the localStorage value for myToken. If the value is not nil, we use the getToken port to send the value to the Elm app. If the value is nil, we use the setToken port to listen for a token to be sent and then set it to localStorage.</p>
+
+<h1 id="whats-next">What's Next</h1>
+
+<p>These same basic concepts can be applied to all kinds of JavaScript Interop situations. If you want to get data from JavaScript, you create a port and a subscription using the subscribe method. If you want to send data to JavaScript, you create a port using the send method.</p>
+
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <h2>Get in Touch</h2>
+        <p class="contact-text">Want to talk? Send an e-mail to:</p>
+        <div class="email-address"><a href="mailto:justin.kuepper@gmail.com">justin.kuepper@gmail.com</a></div>
+        <p class="disclaimer">Copyright &copy; 2017 Justin Kuepper. All Rights Reserved.</p>
+      </div>
+    </section>
+
+    <script src="/javascripts/scripts.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-105103587-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>

@@ -201,7 +201,7 @@ plt.show()
     <link rel="alternate" href="http://blog.url.com/articles/2017/09/11/how-to-use-sessions-with-elm.html"/>
     <id>http://blog.url.com/articles/2017/09/11/how-to-use-sessions-with-elm.html</id>
     <published>2017-09-11T16:12:00-06:00</published>
-    <updated>2018-12-05T07:38:28-07:00</updated>
+    <updated>2018-12-05T07:40:03-07:00</updated>
     <author>
       <name>Article Author</name>
     </author>
@@ -217,8 +217,7 @@ plt.show()
 
 &lt;p&gt;A flag that sets a username might look something like this:&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;
-const app = Elm.App.fullscreen({
+&lt;p&gt;&lt;code&gt;const app = Elm.App.fullscreen({
   username: 'Bob'
 });
 &lt;/code&gt;&lt;/p&gt;
@@ -229,14 +228,12 @@ const app = Elm.App.fullscreen({
 
 &lt;p&gt;The first step in adding a port to an Elm application is adding the port keyword before the module name when defining the application file.&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;
-port module App exposing (..)
+&lt;p&gt;&lt;code&gt;port module App exposing (..)
 &lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;The second step is adding two port commands for setting a token and getting a token. Note that you could (and maybe should) get the token using a flag rather than port, but we're going to use a port in this example to show how it's done.&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;
-port setToken : String -&amp;gt; Cmd msg
+&lt;p&gt;&lt;code&gt;port setToken : String -&amp;gt; Cmd msg
 port getToken : (String -&amp;gt; msg) -&amp;gt; Sub msg
 &lt;/code&gt;&lt;/p&gt;
 
@@ -244,8 +241,7 @@ port getToken : (String -&amp;gt; msg) -&amp;gt; Sub msg
 
 &lt;p&gt;The third step is creating the subscription that will set the token in the Elm app.&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;
-subscriptions : Model -&amp;gt; Sub Msg
+&lt;p&gt;&lt;code&gt;subscriptions : Model -&amp;gt; Sub Msg
 subscriptions model =
   getToken AddToken
 &lt;/code&gt;&lt;/p&gt;
@@ -258,8 +254,7 @@ subscriptions model =
 
 &lt;p&gt;Here's what that entire section will look like:&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;
-&amp;lt;script type="text/javascript"&amp;gt;
+&lt;p&gt;&lt;code&gt;&amp;lt;script type="text/javascript"&amp;gt;
   const node = document.getElementById('elm');
   const app = Elm.App.embed(node);
   var currentToken = localStorage.getItem('myToken');

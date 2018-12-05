@@ -22,8 +22,9 @@
 
     <section id="blog" role="main">
       <div class="container">
-        <h2>How to Use Sessions with Elm</h2>
-        <p>Elm is awesome for writing fast, easy-to-ready, and error-free JavaScript, but there are many cases where you'll need to interact with external things. Fortunately, Elm has a way to do this without introducing any error-ridden code to the application.</p>
+        <article id="content">
+          <h2>How to Use Sessions with Elm</h2>
+          <p>Elm is awesome for writing fast, easy-to-ready, and error-free JavaScript, but there are many cases where you'll need to interact with external things. Fortunately, Elm has a way to do this without introducing any error-ridden code to the application.</p>
 
 <p>In this post, we will look at how to implement sessions with Elm using a Elm's JavaScript Interop.</p>
 
@@ -35,8 +36,7 @@
 
 <p>A flag that sets a username might look something like this:</p>
 
-<p><code>
-const app = Elm.App.fullscreen({
+<p><code>const app = Elm.App.fullscreen({
   username: 'Bob'
 });
 </code></p>
@@ -47,14 +47,12 @@ const app = Elm.App.fullscreen({
 
 <p>The first step in adding a port to an Elm application is adding the port keyword before the module name when defining the application file.</p>
 
-<p><code>
-port module App exposing (..)
+<p><code>port module App exposing (..)
 </code></p>
 
 <p>The second step is adding two port commands for setting a token and getting a token. Note that you could (and maybe should) get the token using a flag rather than port, but we're going to use a port in this example to show how it's done.</p>
 
-<p><code>
-port setToken : String -&gt; Cmd msg
+<p><code>port setToken : String -&gt; Cmd msg
 port getToken : (String -&gt; msg) -&gt; Sub msg
 </code></p>
 
@@ -62,8 +60,7 @@ port getToken : (String -&gt; msg) -&gt; Sub msg
 
 <p>The third step is creating the subscription that will set the token in the Elm app.</p>
 
-<p><code>
-subscriptions : Model -&gt; Sub Msg
+<p><code>subscriptions : Model -&gt; Sub Msg
 subscriptions model =
   getToken AddToken
 </code></p>
@@ -76,8 +73,7 @@ subscriptions model =
 
 <p>Here's what that entire section will look like:</p>
 
-<p><code>
-&lt;script type="text/javascript"&gt;
+<p><code>&lt;script type="text/javascript"&gt;
   const node = document.getElementById('elm');
   const app = Elm.App.embed(node);
   var currentToken = localStorage.getItem('myToken');
@@ -96,6 +92,7 @@ subscriptions model =
 
 <p>These same basic concepts can be applied to all kinds of JavaScript Interop situations. If you want to get data from JavaScript, you create a port and a subscription using the subscribe method. If you want to send data to JavaScript, you create a port using the send method.</p>
 
+        </article>
       </div>
     </section>
 

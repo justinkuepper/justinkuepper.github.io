@@ -12,11 +12,17 @@
   </head>
   <body>
     <header id="header">
-      <h3><a href="/">Avid Polymath</a></h3>
+      <h1 id="greeting"><a href="/">Avid Polymath</a></h1>
+      <ul id="social-buttons">
+        <li><a href="https://github.com/justinkuepper"><img src="images/github.svg"></a></li>
+        <li><a href="https://twitter.com/jdkuepper"><img src="images/twitter.svg"></a></li>
+        <li><a href="/feed.xml"><img src="images/rss.svg"></a></li>
+      </ul>
     </header>
 
     <section id="blog" role="main">
       <div class="container">
+        <h2>Testing APIs in Rails with Sinatra</h2>
         <p>Most modern web applications consume one or more APIs, but testing external services can cause a host of problems. For example, connecting to external services can slow down a testing suite; many APIs have rate limits; and, some APIs may not have testing (sandbox) functionality.</p>
 
 <p>There are several different approaches to testing external APIs - ranging from creating fake stubs to recording live responses with VCR - but there's one approach that I have come to favor over the others due to its simplicity, speed, and robustness.</p>

@@ -12,11 +12,17 @@
   </head>
   <body>
     <header id="header">
-      <h3><a href="/">Avid Polymath</a></h3>
+      <h1 id="greeting"><a href="/">Avid Polymath</a></h1>
+      <ul id="social-buttons">
+        <li><a href="https://github.com/justinkuepper"><img src="images/github.svg"></a></li>
+        <li><a href="https://twitter.com/jdkuepper"><img src="images/twitter.svg"></a></li>
+        <li><a href="/feed.xml"><img src="images/rss.svg"></a></li>
+      </ul>
     </header>
 
     <section id="blog" role="main">
       <div class="container">
+        <h2>How to Use Sessions with Elm</h2>
         <p>Elm is awesome for writing fast, easy-to-ready, and error-free JavaScript, but there are many cases where you'll need to interact with external things. Fortunately, Elm has a way to do this without introducing any error-ridden code to the application.</p>
 
 <p>In this post, we will look at how to implement sessions with Elm using a Elm's JavaScript Interop.</p>

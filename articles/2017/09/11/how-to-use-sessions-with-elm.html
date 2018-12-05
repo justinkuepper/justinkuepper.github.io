@@ -35,7 +35,8 @@
 
 <p>A flag that sets a username might look something like this:</p>
 
-<p><code>const app = Elm.App.fullscreen({
+<p><code>
+const app = Elm.App.fullscreen({
   username: 'Bob'
 });
 </code></p>
@@ -46,12 +47,14 @@
 
 <p>The first step in adding a port to an Elm application is adding the port keyword before the module name when defining the application file.</p>
 
-<p><code>port module App exposing (..)
+<p><code>
+port module App exposing (..)
 </code></p>
 
 <p>The second step is adding two port commands for setting a token and getting a token. Note that you could (and maybe should) get the token using a flag rather than port, but we're going to use a port in this example to show how it's done.</p>
 
-<p><code>port setToken : String -&gt; Cmd msg
+<p><code>
+port setToken : String -&gt; Cmd msg
 port getToken : (String -&gt; msg) -&gt; Sub msg
 </code></p>
 
@@ -59,7 +62,8 @@ port getToken : (String -&gt; msg) -&gt; Sub msg
 
 <p>The third step is creating the subscription that will set the token in the Elm app.</p>
 
-<p><code>subscriptions : Model -&gt; Sub Msg
+<p><code>
+subscriptions : Model -&gt; Sub Msg
 subscriptions model =
   getToken AddToken
 </code></p>
@@ -72,7 +76,8 @@ subscriptions model =
 
 <p>Here's what that entire section will look like:</p>
 
-<p><code>&lt;script type="text/javascript"&gt;
+<p><code>
+&lt;script type="text/javascript"&gt;
   const node = document.getElementById('elm');
   const app = Elm.App.embed(node);
   var currentToken = localStorage.getItem('myToken');
